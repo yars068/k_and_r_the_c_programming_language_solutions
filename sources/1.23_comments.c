@@ -1,77 +1,112 @@
 #include <stdio.h>
+
+/* Write a program that removes the comments from the C program */
+
 #define BUFSIZE 1000
-#define TRUE 1
-#define FALSE 0
-#define NOTHING -1
-#define DBLSLA "//"
-#define SLASTR "/*"
-#define ASTRSLA "*/"
+#define FALSE -1
 
-/* Write a program to remove all comments from a C porogram */
+/* Map assignments: */
+#define OTHER 0
+#define SINGLE_QUOTE 1
+#define DOUBLE_QUOTE 2
+#define SLASH 3
+#define ASTERISK 4
+#define SINGLE_STRING_COMMENT 5
+#define MULTI_STRING_COMMENT_BEGIN 6
+#define MULTI_STRING_COMMENT_END 7
 
-int get_line(char s[], int lim) {
+int get_line(char buf[], int lim) {
   int c, len;
   c = len = 0;
 
-  printf("Type something:\n");
-  while (len < lim - 1 && (c = getchar()) != EOF && c != '\n')
-    s[len++] = c;
+//  printf("Type something:\n");
+  while ((len < (lim - 1)) && (c = getchar()) != EOF && c != '\n')
+    buf[len++] = c;
 
-  if (c == '\n') s[len++] = c;
-  s[len] = '\0';
+  if (c == '\n') buf[len++] = c;
+  
+  buf[len] = '\0';
   return len;
-}
-
-int findstr(char what[2], char where[]) {
-  int match = FALSE;
-  int pos, i, result;
-  int prev = 0;
-
-  for (i = 0; i <= 2; ++i) {
-    if (prev == 0) pos = 0;
-    else {
-      pos = prev + 1;
-      match = FALSE;
-      result = prev;
-    }
-    while (match == FALSE && where[pos] != '\0') {
-      if (where[pos] == what[i]) {
-        prev = pos;
-        match = TRUE;
-      }
-      ++pos;
-    }
-  }
-  if (match == TRUE) return result;
-  return NOTHING;
-}
-
-void copy(char from[], char to[], int len) {
-  int i = 0;
-
-  while (i < len && (to[i] = from[i]) != '\0') ++i;
-  if (to[i] != '\0') to[i] = '\0';
 }
 
 int main(void) {
   char buf[BUFSIZE] = {'\0'};
   char res[BUFSIZE] = {'\0'};
-  int res_len, res_pos, flag, pos, end, len;
-  res_len = res_pos = end = 0;
+  int map[BUFSIZE] = {FALSE};
+  int i, j, len, state;
 
   while ((len = get_line(buf, BUFSIZE)) > 0) {
-    for (pos = 0; pos < len; ++pos) res[pos] = 0;
-    if ((end = findstr(DBLSLA, buf)) == NOTHING) copy(buf, res, len);
-    else if ((end = findstr(SLASTR, buf)) != NOTHING) {
-      copy(buf, res, end);
-      flag = TRUE;
+    for (i = 0; i < BUFSIZE; ++i) res[i] = 0;
+        state = FALSE;
+    for (i = 0; (i < len && buf[i] != '\0'); ++i) {
+      if (state == SLASH && buf[i] == '*')
+         map[i] = MULTI_STRING_COMMENT_BEGIN;
+
+      else if (state == ASTERISK && buf[i] == '/')
+        map[i] = MULTI_STRING_COMMENT_END;
+
+      else if (state == SLASH && buf[i] == '/')
+        map[i] = SINGLE_STRING_COMMENT;
+
+      else if (buf[i] == '\'')
+        map[i] = SINGLE_QUOTE;
+
+      else if (buf[i] == '\"')
+        map[i] = DOUBLE_QUOTE;
+
+      else if (buf[i] == '*')
+        map[i] = ASTERISK;
+
+      else if (buf[i] == '/')
+        map[i] = SLASH;
+
+      else map[i] = OTHER;
+      state = map[i];
     }
-    else if ((end = findstr(ASTRSLA, buf)) != NOTHING && flag == TRUE)
-      flag = FALSE;
-    else if ((end = findstr(ASTRSLA, buf)) == NOTHING && flag == TRUE)
-      flag = TRUE;
-    else if (flag == TRUE && 
+
+    i = j = 0;
+    state = FALSE;
+    while (i < len) {
+      if (state != MULTI_STRING_COMMENT_BEGIN && state != SINGLE_STRING_COMMENT && map[i] == SINGLE_QUOTE) {
+        res[j++] = buf[i];
+        state = SINGLE_QUOTE;
+      }
+      else if (state != MULTI_STRING_COMMENT_BEGIN && state != SINGLE_STRING_COMMENT && map[i] == DOUBLE_QUOTE) {
+        state = DOUBLE_QUOTE;
+        res[j++] = buf[i];
+      }
+      else if (state != SINGLE_QUOTE && state != DOUBLE_QUOTE && map[i] == SLASH && map[i + 1] == MULTI_STRING_COMMENT_BEGIN) {
+        state = MULTI_STRING_COMMENT_BEGIN;
+        i+=2;
+      }
+      else if (state == MULTI_STRING_COMMENT_BEGIN && map[i] == ASTERISK && map[i + 1] == MULTI_STRING_COMMENT_END) {
+        state = MULTI_STRING_COMMENT_END;
+        i+=2;
+        res[j++] = buf[i];
+      }
+      else if (map[i] == SLASH && map[i + 1] == SINGLE_STRING_COMMENT) {
+        state == SINGLE_STRING_COMMENT;
+        break; //drop the rest of line
+      }
+      else if (map[i] == SLASH && map[i + 1] != MULTI_STRING_COMMENT_BEGIN && map[i + 1] != SINGLE_STRING_COMMENT) {
+        state = SLASH;
+        res[j++] = buf[i];
+      }
+      else if (map[i] == ASTERISK && map[i + 1] != MULTI_STRING_COMMENT_END) {
+        state = ASTERISK;
+        //++i;
+        res[j++] = buf[i];
+      }
+      else if (state != MULTI_STRING_COMMENT_BEGIN && state != SINGLE_STRING_COMMENT && (map[i] == OTHER || map[i] == ASTERISK)) {
+        state = OTHER;
+        res[j++] = buf[i];
+      }
+
+      ++i;
+    }
+    /* Print the result: */
+    if (j > 1) printf("%s", res);
   }
-  printf("Result: %s\n", res);
+  
   return 0;
 }
