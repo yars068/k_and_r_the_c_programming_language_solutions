@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
@@ -6,11 +7,10 @@
 
 int main(int argc, char** argv) {
   int i, j;
-  j = 0;
 
   if (argc > 1)
     if (strcmp(argv[1], "-n") != 0) {
-    printf("args: %d %s\n", argc, argv[1]);
+    printf("charmap: unknown option \'%s\'\n", argv[1]);
     printf("Usage: charmap [-n]\n");
     printf("-n   Print ASCII codes and characters.\n");
     printf("When charmap invoked without -n, only characters will be printed.\n");
@@ -24,5 +24,5 @@ int main(int argc, char** argv) {
       else printf("%4c %c" , ' ', i);
   }
   putchar('\n');
-  return 0;
+  return EXIT_SUCCESS;
 }
