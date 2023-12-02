@@ -1,5 +1,6 @@
 #include <stdio.h>
 #define BUFSIZE 1024
+#define OFFSET 14
 
 int get_line(char buf[], int lim) {
   int c, len;
@@ -23,8 +24,8 @@ int main(void) {
     for (i = 0; i < len; ++i)
       printf("\'%c\', ", buf[i]);
       
-    if (len <= 16) {
-      for (d = (16 - len); d >= 0; --d)
+    if (len <= OFFSET) {
+      for (d = (OFFSET - len); d >= 0; --d)
         printf("\'0\', ");
 
       putchar('\n');
