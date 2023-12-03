@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "../include/custom_functions.h"
 
 /* Write a program to check C program for the syntax errors like */
 /* unpaired brackets, quotes, broken escape sequences and comments 
@@ -91,14 +90,19 @@ int main(void) {
                      13, '_', 'T', 'h', 'r', 'e', 'a', 'd', '_', 'l', 'o', 'c', 'a', 'l', '0', '0'
                      };
 
-  while ((len = get_line(buf, BUFSIZE, "Enter record number: ")) > 0) {
-    if ((number = chartodig(buf, len)) >= 0) {
-      printf("Showing record %d...\n", number);
-      for (i = 0; keyword[i] != '\0'; ++i) keyword[i] = '\0'; /* res is response from get_keyword(), so need to clean it before next call */
-      printf("Acquiring database... ");
-      printf("Size of database is %d bytes (%d bytes per line, %d lines)\n", sizeof(keywords), OFFSET, ((sizeof(keywords)/OFFSET)));
-      if ((kw_len = get_keyword(keywords, keyword, number, OFFSET)) != FALSE)
-        printf("Keyword number %d found, is \'%s\'\n",number, keyword);
+  char delimiters[] = {',', ';', '.', '+', '-', '*', '^', '&', '=', '~', '!', '/', '<', '>', '(', 
+                       ')', '{', '}', '[', ']', '|', '%', '?', '\'', '"', ':', '_', '\\', '#'
+                      };
+
+  char preproc[] = { 6, 'd', 'e', 'f', 'i', 'n', 'e', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                     7, 'i', 'n', 'c', 'l', 'u', 'd', 'e', '0', '0', '0', '0', '0', '0', '0', '0',
+                     6, 'p', 'r', 'a', 'g', 'm', 'a', '0', '0', '0', '0', '0', '0', '0', '0', '0'
+                   };
+  
+  while ((len = get_line(buf, BUFSIZE, "Enter code to check: ")) > 0) {
+    i = 0;
+    while (buf[i] != '\n') {
+      
     }
   }
   return 0;
