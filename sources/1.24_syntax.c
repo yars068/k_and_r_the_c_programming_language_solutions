@@ -7,11 +7,8 @@
 #define BUFSIZE      1024
 #define FIELDWIDTH     16
 #define FALSE          -1
-#define PREPROC_COUNT  13
-#define KEYWORDS_COUNT 43
-#define KEYWORD_MAXLEN 14
 
-/* Map definitions for non-keywords and other lexems */
+/* Map definitions: */
 
 #define OTHER                      8
 #define LVAL                       1
@@ -21,6 +18,7 @@
 #define DELIMITER                  5
 #define PREPROCESSOR               6
 #define KEYWORD                    7
+#define SPACE                      9 /*Spacebar, new-line or h-tab */
 
 int get_line(char buf[], int lim, char msg[]) {
   int c, len;
@@ -108,9 +106,7 @@ int main(void) {
                      13, '_', 'T', 'h', 'r', 'e', 'a', 'd', '_', 'l', 'o', 'c', 'a', 'l', '0', '0'
                      };
 
-/* Place them itself in a map. Possibly better is use named constants instead of this, because */
-/* it would be more consistent. */
-  char delimiters[] = {' ', ',', ';', '.', '+', '-', '*', '^', '&', '=', '~', '!', '/', '<', '>', '(',
+  char delimiters[] = {',', ';', '.', '+', '-', '*', '^', '&', '=', '~', '!', '/', '<', '>', '(',
                        ')', '{', '}', '[', ']', '|', '%', '?', '\'', '"', ':', '_', '\\', '#', '\0',
                       };
 
@@ -137,6 +133,8 @@ int main(void) {
       if (delimiters[j] == buf[i]) {
         map[i] = DELIMITER;
       }
+      else if (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')
+        map[i] = SPACE;
       else map[i] = OTHER;
     }
     /* Then, prepocessor directives: */
@@ -144,16 +142,16 @@ int main(void) {
     if (buf[0] == '#') {
       for (i = 1; map[i] != DELIMITER; ++i) word[word_len++] = buf[i]; /* get a word */
 
-      for (i = 0; i < KEYWORDS_COUNT && ((kw_len = get_keyword(preproc, keyword, i, FIELDWIDTH)) != FALSE); ++i) {
+      for (i = 0; ((kw_len = get_keyword(preproc, keyword, i, FIELDWIDTH)) != FALSE); ++i) {
         for (j = 0; j < kw_len && word[j] == keyword[j]; j++) map[j + 1] = PREPROCESSOR;
         for (j = 0; j < kw_len; ++j) keyword[j] = '\0'; /* reset after when all done */
       }
     }
 
-    printf("debug: you entered a string:\n%s", buf);
-    printf("text mapped as follows:\n");
-    for (i = 0; (map[i] > 0) && (map[i] != FALSE); i++) printf("%u", map[i]);
+    printf("debug: mapped and you entered a string:\n%s", buf);
+    for (i = 0; (map[i] > 0) && (map[i] != FALSE); i++) printf("%i", map[i]);
     putchar('\n');
+    for (i = 0; i < len; ++i) map[i] = buf[i] = '\0';
   }
   return 0;
 }
