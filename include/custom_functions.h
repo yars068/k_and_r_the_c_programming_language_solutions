@@ -23,12 +23,17 @@ void reverse(char s[], int length) {
 int chartodig(char buf[], int len) {
   int mul = 1;
   int i, res = 0;
-
-  for (i = (len - 2); i >= 0; i--) { // because buf[len] = '\n'
-    res += (buf[i] - '0') * mul;
-    mul *= 10;
+  int ret = -1;
+  
+  for (i = len; i >= 0; --i) {
+    if (buf[i] >= '0' && buf[i] <= '9') {
+      res += (buf[i] - '0') * mul;
+      mul *= 10;
+      ret = 0;
+    }
   }
-  return res;
+  if (ret == -1) return ret;
+  else return res;
 }
 
 int get_line(char buf[], int lim, const char msg[]) {
