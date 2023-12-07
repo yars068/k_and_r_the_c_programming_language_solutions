@@ -1,3 +1,10 @@
+#ifndef _CTYPE_H
+#include <ctype.h>
+#endif
+#ifndef _STDIO_H
+#include <stdio.h>
+#endif
+
 void reverse(char s[], int length) {
   char buf[length];
   int i, j;
