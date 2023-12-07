@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <ctype.h>
-
 void reverse(char s[], int length) {
   char buf[length];
   int i, j;
@@ -29,12 +24,12 @@ int chartodig(char buf[], int len) {
   return res;
 }
 
-int get_line(unsigned char buf[], unsigned int lim, const char msg[]) {
-  unsigned int i = 0;
-  unsigned short int c = '\0';
+int get_line(char buf[], int lim, const char msg[]) {
+  int i = 0;
+  char c = '\0';
 
   printf("%s ", msg);
-  while ((i < lim - 1) && ((c = getchar()) != EOF) && (c != '\n'))
+  while (i < lim - 1 && ((c = getchar()) != EOF) && c != '\n')
     buf[i++] = c;
 
   if (c == '\n') buf[i++] = '\n';
