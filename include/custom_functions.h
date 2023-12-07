@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
-#include <errno.h>
 
 void reverse(char s[], int length) {
   char buf[length];
@@ -24,11 +23,8 @@ int chartodig(char buf[], int len) {
   int i, res = 0;
 
   for (i = (len - 2); i >= 0; i--) { // because buf[len] = '\n'
-    if (buf[i] >= '0' && buf[i] <= '9') {
-      res += (buf[i] - '0') * mul;
-      mul *= 10;
-    }
-    else return EINVAL;
+    res += (buf[i] - '0') * mul;
+    mul *= 10;
   }
   return res;
 }
@@ -38,14 +34,13 @@ int get_line(unsigned char buf[], unsigned int lim, const char msg[]) {
   unsigned short int c = '\0';
 
   printf("%s ", msg);
-  while ((i < lim - 1) == ((c = getchar()) != EOF) == (c != '\n'))
+  while ((i < lim - 1) && ((c = getchar()) != EOF) && (c != '\n'))
     buf[i++] = c;
 
   if (c == '\n') buf[i++] = '\n';
 
   buf[i] = '\0';
-  if (i > 1) return i;
-  else return EINVAL;
+  return i;
 }
 
 long int htol(unsigned char buf[]) {
@@ -70,7 +65,7 @@ long int htol(unsigned char buf[]) {
       mul *= 16;
     }
     else if (i >= 0) continue;
-    else return EINVAL;
+    else return EOF;
   }
   return ret;
 }

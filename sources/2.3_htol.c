@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
-#include <errno.h>
 #include "../include/custom_functions.h"
 
 #define BUFSIZE 1024U
@@ -16,8 +15,8 @@ int main(void) {
   long int res = 0;
   const unsigned char message[] = "Input hexadecimal number: ";
 
-  while ((len = get_line(buf, BUFSIZE, message)) != EINVAL) {
-    if ((res = htol(buf)) != EINVAL)
+  while ((len = get_line(buf, BUFSIZE, message)) != EOF) {
+    if ((res = htol(buf)) != EOF)
       printf("decimal number is %d\n", res);
     else printf("Illegal input. Try again.\n");
   }
