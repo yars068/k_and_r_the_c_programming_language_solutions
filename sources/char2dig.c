@@ -1,6 +1,6 @@
 #include <stdio.h>
 #define BUFSIZE 1024
-#define MESSAGE "Input number (0 to 99): "
+#define MESSAGE "Input number: "
 
 int get_line(char buf[], int lim, char msg[]) {
   int c, len;
@@ -19,12 +19,17 @@ int get_line(char buf[], int lim, char msg[]) {
 int chartodig(char buf[], int len) {
   int mul = 1;
   int i, res = 0;
-
-  for (i = (len - 2); i >= 0; i--) { // because buf[len] = '\n'
-    res += (buf[i] - '0') * mul;
-    mul *= 10;
+  int ret = -1;
+  
+  for (i = len; i >= 0; --i) {
+    if (buf[i] >= '0' && buf[i] <= '9') {
+      res += (buf[i] - '0') * mul;
+      mul *= 10;
+      ret = 0;
+    }
   }
-  return res;
+  if (ret == -1) return ret;
+  else return res;
 }
 
 int main(void) {
@@ -32,8 +37,9 @@ int main(void) {
   int len, num;
 
   while ((len = get_line(buf, BUFSIZE, MESSAGE)) > 0) {
-    printf("Length of your input is %d\n", len);
-    num = chartodig(buf, len);
-    printf("Done. Now you have a number %d.\n", num);
+    if ((num = chartodig(buf, len)) >= 0)
+      printf("Now you have a number %d.\n", num);
+    else
+      printf("Something went wrong, retype\n");
   }
 }
