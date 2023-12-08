@@ -7,6 +7,8 @@
 #define BUFSIZE      1024
 #define FIELDWIDTH     16
 #define FALSE          -1
+#define PREPROC_COUNT  13
+#define KEYWORD_COUNT  44
 
 /* Map definitions: */
 
@@ -40,24 +42,41 @@ int get_keyword(char buf[], char res[], int number, int field_width) {
   int ret = FALSE;
   int first_item = (number * field_width) + 1;
   
+  for (i = 0; i < FIELDWIDTH; ++i) res[i] = '\0'; /* reset */
+
   len = buf[number * field_width];
   if (len > 0) {
-    while ((buf[first_item] != 0) && (i < len)) {
+    for (i = 0; (buf[first_item] != 0 && i < len); ++i)
       res[i] = buf[first_item + i];
-      ++i;
-    }
+
     ret = len;
   }
   else ret = FALSE;
   return ret;
 }
 
+/* get a word from string */
+int get_word(char buf[], char res[], int map[], int start, int len) {
+int i, res_len;
+
+  for (res_len = 0; res_len < FIELDWIDTH; res_len++)
+    res[res_len] = '\0'; /* reset */
+  res_len = 0;
+
+  for (i = start; (i < len && map[i] != DELIMITER && map[i] != SPACE); ++i)
+    res[res_len++] = buf[i];
+
+  if (res_len > 0) return res_len;
+  else return FALSE;
+}
+
 int main(void) {
   int i, j, k, len;
+  int next_pos = 0;
   int kw_len = FALSE;
   int word_len = 0;
-  char word[BUFSIZE] = {'\0'};
-  char keyword[BUFSIZE] = {'\0'};
+  char word[FIELDWIDTH] = {'\0'};
+  char keyword[FIELDWIDTH] = {'\0'};
   char buf[BUFSIZE] = {'\0'};
   int map[BUFSIZE] = {FALSE};
   char keywords[] = { 6, 's', 'i', 'z', 'e', 'o', 'f', '0', '0', '0', '0', '0', '0', '0', '0', '0', 
@@ -103,7 +122,8 @@ int main(void) {
                       8, '_', 'G', 'e', 'n', 'e', 'r', 'i', 'c', '0', '0', '0', '0', '0', '0', '0', 
                       9, '_', 'N', 'o', 'r', 'e', 't', 'u', 'r', 'n', '0', '0', '0', '0', '0', '0', 
                      14, '_', 'S', 't', 'a', 't', 'i', 'c', '_', 'a', 's', 's', 'e', 'r', 't', '0', 
-                     13, '_', 'T', 'h', 'r', 'e', 'a', 'd', '_', 'l', 'o', 'c', 'a', 'l', '0', '0'
+                     13, '_', 'T', 'h', 'r', 'e', 'a', 'd', '_', 'l', 'o', 'c', 'a', 'l', '0', '0',
+                      0, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
                      };
 
   char delimiters[] = {',', ';', '.', '+', '-', '*', '^', '&', '=', '~', '!', '/', '<', '>', '(',
@@ -123,6 +143,7 @@ int main(void) {
                       5, 'e', 'r', 'r', 'o', 'r', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                       7, 'w', 'a', 'r', 'n', 'i', 'n', 'g', '0', '0', '0', '0', '0', '0', '0', '0',
                       6, 'p', 'r', 'a', 'g', 'm', 'a', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                      0, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
                    };
 
   while ((len = get_line(buf, BUFSIZE, "Enter the source code to check: ")) > 0) {
@@ -130,9 +151,8 @@ int main(void) {
     for (i = 0; buf[i] != '\0'; ++i) {
       j = 0;
       while (delimiters[j] != buf[i] && delimiters[j] != '\0') j++;
-      if (delimiters[j] == buf[i]) {
+      if (delimiters[j] == buf[i])
         map[i] = DELIMITER;
-      }
       else if (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')
         map[i] = SPACE;
       else map[i] = OTHER;
@@ -140,18 +160,22 @@ int main(void) {
     /* Then, prepocessor directives: */
     /* Preprocessor directive always starts with '#' at begin of string */
     if (buf[0] == '#') {
-      for (i = 1; map[i] != DELIMITER; ++i) word[word_len++] = buf[i]; /* get a word */
-
-      for (i = 0; ((kw_len = get_keyword(preproc, keyword, i, FIELDWIDTH)) != FALSE); ++i) {
-        for (j = 0; j < kw_len && word[j] == keyword[j]; j++) map[j + 1] = PREPROCESSOR;
-        for (j = 0; j < kw_len; ++j) keyword[j] = '\0'; /* reset after when all done */
-      }
+      if ((word_len = get_word(buf, word, map, 1, len)) != FALSE)
+        for (i = 0; i < PREPROC_COUNT && ((kw_len = get_keyword(preproc, keyword, i, FIELDWIDTH)) != FALSE); ++i)
+          if (kw_len == word_len)
+            for (j = 0; j < kw_len && word[j] == keyword[j]; j++)
+              map[j + 1] = PREPROCESSOR;
+    }
+    else {
+      /* Then, keywords: */
+      
     }
 
     printf("debug: mapped and you entered a string:\n%s", buf);
     for (i = 0; (map[i] > 0) && (map[i] != FALSE); i++) printf("%i", map[i]);
     putchar('\n');
-    for (i = 0; i < len; ++i) map[i] = buf[i] = '\0';
+    for (i = 0; i < len; ++i) map[i] = buf[i] = '\0'; /* reset the buffer*/
+
   }
   return 0;
 }
