@@ -1,8 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
+#ifndef _CTYPE_H
 #include <ctype.h>
-#include <errno.h>
+#endif
+#ifndef _STDIO_H
+#include <stdio.h>
+#endif
 
 void reverse(char s[], int length) {
   char buf[length];
@@ -22,30 +23,31 @@ void reverse(char s[], int length) {
 int chartodig(char buf[], int len) {
   int mul = 1;
   int i, res = 0;
-
-  for (i = (len - 2); i >= 0; i--) { // because buf[len] = '\n'
+  int ret = -1;
+  
+  for (i = len; i >= 0; --i) {
     if (buf[i] >= '0' && buf[i] <= '9') {
       res += (buf[i] - '0') * mul;
       mul *= 10;
+      ret = 0;
     }
-    else return EINVAL;
   }
-  return res;
+  if (ret == -1) return ret;
+  else return res;
 }
 
-int get_line(unsigned char buf[], unsigned int lim, const char msg[]) {
-  unsigned int i = 0;
-  unsigned short int c = '\0';
+int get_line(char buf[], int lim, const char msg[]) {
+  int i = 0;
+  char c = '\0';
 
   printf("%s ", msg);
-  while ((i < lim - 1) == ((c = getchar()) != EOF) == (c != '\n'))
+  while (i < lim - 1 && ((c = getchar()) != EOF) && c != '\n')
     buf[i++] = c;
 
   if (c == '\n') buf[i++] = '\n';
 
   buf[i] = '\0';
-  if (i > 1) return i;
-  else return EINVAL;
+  return i;
 }
 
 long int htol(unsigned char buf[]) {
@@ -70,7 +72,7 @@ long int htol(unsigned char buf[]) {
       mul *= 16;
     }
     else if (i >= 0) continue;
-    else return EINVAL;
+    else return EOF;
   }
   return ret;
 }
