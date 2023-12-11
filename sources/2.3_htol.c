@@ -6,8 +6,8 @@
 
 #define BUFSIZE 1024U
 
-/* Lesson 2.3. Write function atol() which fransform a hexadecimal */
-/* numbers fo an integer */
+/* Lesson 2.3. Write function htol() which fransform a hexadecimal */
+/* numbers to an integer */
 
 int main(void) {
   unsigned char buf[BUFSIZE] = { '\0' };
