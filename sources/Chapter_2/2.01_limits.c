@@ -2,7 +2,7 @@
 #include <limits.h>
 #include <float.h>
 
-/* Show limits from included headers */
+/* Lesson 2.1. Show limits from included headers */
 /* Just read the source itself, no code here */
 
 int main(void) {

@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+/* Lesson 2.10. Write function lower(char s) which makes a UPPERCASE letter */
+/* to be lowercase using ternary operator */
+
 char lower(char s) {
   return (s >= 'A' && s <= 'Z') ? ((s - 'A') + 'a') : (s >= 'a' && s <= 'z') ? s : '\0';
 }
