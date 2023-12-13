@@ -1,12 +1,25 @@
 #include <stdio.h>
 #include <ctype.h>
-#include "../include/custom_functions.h"
 #define FALSE -1
 #define BUFSIZE 1024
 
 /* Lesson 2.5. Write function any(s1, s2) that returns the 
    first position number of s1 matched to any of character in s2,
    or -1 if no match */
+
+int get_line(char buf[], int lim, const char msg[]) {
+  int i = 0;
+  char c = '\0';
+
+  printf("%s ", msg);
+  while (i < lim - 1 && ((c = getchar()) != EOF) && c != '\n')
+    buf[i++] = c;
+
+  if (c == '\n') buf[i++] = '\n';
+
+  buf[i] = '\0';
+  return i;
+}
 
 int any(unsigned char s1[], unsigned char s2[]) {
   int i, j;

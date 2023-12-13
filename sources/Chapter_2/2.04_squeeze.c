@@ -2,10 +2,24 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
-#include "../include/custom_functions.h"
+#define BUFSIZE 1024
+
 /* Lesson 2.4. Remove all characters from string s1 that appears in string s2 */
 
-#define BUFSIZE 1024
+int get_line(char buf[], int lim, const char msg[]) {
+  int i = 0;
+  char c = '\0';
+
+  printf("%s ", msg);
+  while (i < lim - 1 && ((c = getchar()) != EOF) && c != '\n')
+    buf[i++] = c;
+
+  if (c == '\n') buf[i++] = '\n';
+
+  buf[i] = '\0';
+  return i;
+}
+
 
 int main(void) {
   unsigned char str_one[BUFSIZE] = {'\0'};

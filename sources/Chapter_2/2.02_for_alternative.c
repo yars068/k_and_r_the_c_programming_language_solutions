@@ -2,6 +2,8 @@
 #include <limits.h>
 #define BUFSIZE 1024U
 
+/* Lesson 2.2. Rewrite function get_line() using alternative conditions */
+
 int get_line(unsigned char buf[], unsigned int lim, const char msg[]) {
   unsigned int i = 0;
   unsigned int c = '\0';
