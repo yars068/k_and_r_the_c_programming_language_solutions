@@ -22,15 +22,35 @@ int binsearch_old(int x, int v[], int n) {
   return -1; /* no match */
 }
 
+int binsearch(int x, int v[], int n) {
+  int low, high, mid;
+  low = 0;
+  high = n - 1 ;
+
+  mid = (low + high) / 2;
+  if (x < v[mid])
+    high = mid - 1;
+  else if (x > v[mid])
+    low = mid + 1;
+
+  while (low <= high) {
+    if (x < v[mid]) high = mid - 1;
+    else low = mid + 1;
+    mid = (low + high) / 2;
+  }
+
+  return mid;
+}
+
 int main(void) {
   const int num = 10;
   int array[num];
   int i, res;
-  int x = 12;
-  
+  int x = 7;
+
   for (i = 0; i < num; i++) array[i] = i + 1;
   for (i = 0; i < num; i++) printf("array[%d] = %d\n", i, array[i]);
   printf("Search result for number %d: ", x);
-  (res = binsearch_old(x, array, num)) != -1 ? printf("%d\n", res) : printf("Nothing\n");
+  ((res = binsearch(x, array, num)) != -1) ? printf("%d\n", res) : printf("Nothing\n");
   return 0;
 }

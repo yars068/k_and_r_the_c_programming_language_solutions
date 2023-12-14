@@ -10,7 +10,7 @@ char lower(char s) {
 int main(void) {
   char w[] = "aBcDeF";
   int i = 0;
-  
+
   printf("Source: %s, transformed: ", w);
   for (i = 0; w[i] != '\0'; i++) {
     printf("%c", lower(w[i]));
@@ -18,4 +18,3 @@ int main(void) {
   putchar('\n');
   return 0;
 }
-
