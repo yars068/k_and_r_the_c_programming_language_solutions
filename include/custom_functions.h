@@ -5,8 +5,8 @@
 #include <stdio.h>
 #endif
 
-unsigned power(const unsigned base, unsigned n) {
-  unsigned p = 1;
+long power(const unsigned base, int n) {
+  long p = 1;
 
   while (n > 0) {
     p *= base;
