@@ -5,6 +5,16 @@
 #include <stdio.h>
 #endif
 
+unsigned power(const unsigned base, unsigned n) {
+  unsigned p = 1;
+
+  while (n > 0) {
+    p *= base;
+    --n;
+  }
+  return p;
+}
+
 void reverse(char s[], int length) {
   char buf[length];
   int i, j;
