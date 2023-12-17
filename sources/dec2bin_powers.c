@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 #include <ctype.h>
 #include "../include/custom_functions.h"
 #define BUFSIZE 66 /* 8 bits per byte, 8 bytes total plus a '\n' and '\0' */ 
@@ -6,13 +7,10 @@
 /* dec2bin: translate decimal integer to binary */
 
 int get_power(const unsigned base, long number) {
-  int n = 0;
+  int n = 32;
+  long p = 0;
 
-  if (number == 0 || number == 1) return 0;
-  else if (number == 2) return 1;
-  else
-    while (power(base, n + 1) <= number)
-      n++;
+  for (n = 32; n > 0 && (p = power(base, n)) > number; --n);
 
   return n;
 }
@@ -29,7 +27,7 @@ int dtob(long number, char res[]) {
   for (n = n_max; n >= 0; --n) {
     res[n] = '0';
   }
-
+  n = 0;
   while (sub > 0) {
     if ((n = get_power(base, sub)) >= 0)
        res[n] = '1';
@@ -54,7 +52,7 @@ int main(void) {
         number += power(10, i) * (buf[j++] - '0');
     }
     printf("Decimal number is: %d\n", number);
-    if (dtob(number, buf))
+    if (dtob(number, buf) >= 0)
       printf("Binary number is %s\n", buf);
 
     number = 0; /* reset */
