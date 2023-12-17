@@ -9,15 +9,14 @@ void reverse(char s[], int length) {
   char buf[length];
   int i, j;
   i = 0;
-  j = length - 2; // because string is in 'hello\n\0' format
-  while (i <= length - 2 && j >= 0) {
-    buf[i] = s[j];
+  j = length;
+  while (s[i] != '\0' && j >= 0) {
+    if (s[i] != '\n') buf[i] = s[j];
     ++i;
     --j;
   }
-  buf[length - 1] = '\n';
-  buf[length] = '\0';
-  for (i = 0; i < length; ++i) s[i] = buf[i];
+
+  for (i = 0; s[i] != '\0'; ++i) s[i] = buf[i];
 }
 
 int chartodig(char buf[], int len) {
