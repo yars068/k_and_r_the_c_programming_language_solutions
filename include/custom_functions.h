@@ -4,7 +4,6 @@
 #ifndef _STDIO_H
 #include <stdio.h>
 #endif
-#define TRUE 1
  
 void reverse(char s[], int length) {
   char buf[length];
@@ -81,17 +80,16 @@ long int htol(unsigned char buf[]) {
 int str_cmp(char w1[], char w2[]) {
   int i = 0;
   int j = 0;
-  int ret = FALSE;
+  int ret = 0;
 
   while ((w1[i] != '\n') || (w2[j] != '\n')) {
     if (w1[i] == w2[j]) {
-      ret = TRUE;
+      ret = 1;
     }
-    else ret = FALSE;
+    else ret = 0;
     i++;
     j++;
   }
 
-  printf("str_cmp: returning %d\n", ret);
   return ret;
 }
