@@ -85,3 +85,20 @@ long int htol(unsigned char buf[]) {
   }
   return ret;
 }
+
+int str_cmp(char w1[], char w2[]) {
+  int i = 0;
+  int j = 0;
+  int ret = 0;
+
+  while ((w1[i] != '\n') || (w2[j] != '\n')) {
+    if (w1[i] == w2[j]) {
+      ret = 1;
+    }
+    else ret = 0;
+    i++;
+    j++;
+  }
+
+  return ret;
+}
