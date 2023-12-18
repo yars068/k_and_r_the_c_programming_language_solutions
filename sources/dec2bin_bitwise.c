@@ -6,16 +6,6 @@
 
 /* dec2bin: transform a decimal integer to binary form */
 
-unsigned power(const unsigned base, unsigned n) {
-  unsigned p = 1;
-
-  while (n > 0) {
-    p *= base;
-    --n;
-  }
-  return p;
-}
-
 int dtob(long number, unsigned char res[]) {
   unsigned base = 2;
   int i, n, len = 0;
