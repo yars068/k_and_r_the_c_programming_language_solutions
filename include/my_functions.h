@@ -5,6 +5,7 @@
 #include <stdio.h>
 #endif
 
+/* power: raises a number to a power */
 long power(const unsigned base, int n) {
   long p = 1;
 
@@ -15,25 +16,27 @@ long power(const unsigned base, int n) {
   return p;
 }
 
+/* reverse: revert the string s */
 void reverse(char s[], int length) {
-  char buf[length];
+  char buf[BUFSIZE];
   int i, j;
   i = 0;
   j = length;
-  while (s[i] != '\0' && j >= 0) {
-    if (s[i] != '\n') buf[i] = s[j];
-    ++i;
+
+  while (j >= 0) {
+    if (s[j] != '\n'&& s[j] != '\0') buf[i++] = s[j];
     --j;
   }
 
   for (i = 0; s[i] != '\0'; ++i) s[i] = buf[i];
 }
 
+/* chartodig: transform a character representation of number to number itself */
 int chartodig(char buf[], int len) {
   int mul = 1;
   int i, res = 0;
   int ret = -1;
-  
+
   for (i = len; i >= 0; --i) {
     if (buf[i] >= '0' && buf[i] <= '9') {
       res += (buf[i] - '0') * mul;
@@ -45,6 +48,7 @@ int chartodig(char buf[], int len) {
   else return res;
 }
 
+/* get_line: store the input stream to array buf */
 int get_line(char buf[], int lim, const char msg[]) {
   int i = 0;
   char c = '\0';
@@ -59,7 +63,9 @@ int get_line(char buf[], int lim, const char msg[]) {
   return i;
 }
 
+/* htol: transform hexadecimal number in the character form to a number with type lond int */
 long int htol(unsigned char buf[]) {
+  const int base = 16 /* = 2^4 */
   long int ret = 0;
   long int i;
   unsigned short c;
@@ -78,27 +84,10 @@ long int htol(unsigned char buf[]) {
       else if (isxdigit(c))
         ret += ((c - 'a') + 10) * mul;
 
-      mul *= 16;
+      mul *= base;
     }
     else if (i >= 0) continue;
     else return EOF;
   }
-  return ret;
-}
-
-int str_cmp(char w1[], char w2[]) {
-  int i = 0;
-  int j = 0;
-  int ret = 0;
-
-  while ((w1[i] != '\n') || (w2[j] != '\n')) {
-    if (w1[i] == w2[j]) {
-      ret = 1;
-    }
-    else ret = 0;
-    i++;
-    j++;
-  }
-
   return ret;
 }
