@@ -7,6 +7,25 @@
 /* Lesson 3.4. Explain why this function cannot handle the greatest negative */
 /* number? The answer: when comparing n < 0 to determine the sign, becomes a type owerflow. */
 
+/* original version of itoa: transform a number to its character representation */
+void itoa (int n, char s[]) {
+  int i, sign;
+
+  if ((sign = n) < 0)
+    n = -n;
+
+  i = 0;
+  do
+   s[i++] = n % 10 + '0';
+  while ((n /= 10) > 0);
+
+  if (sign < 0)
+    s[i++] = '-';
+
+  s[i] = '\0';
+  reverse(s);
+}
+
 /* reverse: replace the s with s reverted */
 void reverse(char s[], int length) {
   char buf[BUFSIZE];
@@ -22,7 +41,7 @@ void reverse(char s[], int length) {
   for (i = 0; s[i] != '\0'; ++i) s[i] = buf[i];
 }
 
-/* itoa: transform an integer to text form */
+/* itoa: transform an integer to character form */
 void itoa (int n, char s[]) {
   int i, sign = NO;
   int is_max = NO;
