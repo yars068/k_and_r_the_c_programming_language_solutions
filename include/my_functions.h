@@ -91,3 +91,24 @@ long int htol(unsigned char buf[]) {
   }
   return ret;
 }
+
+/* str_cmp: compare two strings */
+int str_cmp(char w1[], char w2[]) {
+  enum boolean {FALSE = 0, TRUE };
+  int i = 0;
+  int j = 0;
+  int ret = TRUE;
+
+  while ((ret == TRUE) && (w1[i] == w2[j]) && (w1[i] != '\0') && (w2[j] != '\0')) {
+    if ((w1[i] == w2[j]) && (i == j))
+      ret = TRUE;
+
+    if (w1[i] != '\0') i++;
+    if (w2[j] != '\0') j++;
+    if ((i != j) || (w1[i] != w2[j]))
+      ret = FALSE;
+  }
+
+  if ((i != j) && (w1[i] != w2[j])) ret = FALSE;
+  return ret;
+}
