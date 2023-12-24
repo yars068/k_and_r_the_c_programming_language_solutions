@@ -45,6 +45,9 @@ int main (void) {
         else
           printf("Error: division by zero\n");
         break;
+      case 'm':case 'M': /* simplest way to add support for negative */
+        push(-pop());  /* numbers is ising another symbol for unary '-' operation */
+        break;
       case '\n' :
         printf("\t%.8g\n", pop());
         break;
