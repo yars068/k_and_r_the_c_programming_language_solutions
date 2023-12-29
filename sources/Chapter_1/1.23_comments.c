@@ -37,7 +37,9 @@ int main(void) {
 
   while ((len = get_line(buf, BUFSIZE)) > 0) {
     for (i = 0; i < BUFSIZE; ++i) res[i] = 0;
-        state = FALSE;
+    
+    state = FALSE;
+    
     for (i = 0; (i < len && buf[i] != '\0'); ++i) {
       if (state == SLASH && buf[i] == '*')
          map[i] = MULTI_STRING_COMMENT_BEGIN;
