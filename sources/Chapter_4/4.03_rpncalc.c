@@ -3,7 +3,7 @@
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
 
-/* Lesson 4.3. Modify this calculator: add the mudulus (%) */
+/* Lesson 4.3. Modify this calculator: add the modulus (%) */
 /* operator and provisions to negative numbers */
 
 int getop (char []);
@@ -46,7 +46,7 @@ int main (void) {
           printf("Error: division by zero\n");
         break;
       case 'm':case 'M': /* simplest way to add support for negative */
-        push(-pop());  /* numbers is ising another symbol for unary '-' operation */
+        push(-pop());  /* numbers is using another symbol for unary '-' operation */
         break;
       case '\n' :
         printf("\t%.8g\n", pop());
