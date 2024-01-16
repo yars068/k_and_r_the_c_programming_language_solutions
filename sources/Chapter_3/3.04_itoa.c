@@ -23,7 +23,7 @@ void reverse(char s[], int length) {
 }
 
 /* original version of itoa: transform a number to its character representation */
-void itoa (int n, char s[]) {
+void itoa_original (int n, char s[]) {
   int i, sign;
 
   if ((sign = n) < 0)
@@ -42,7 +42,7 @@ void itoa (int n, char s[]) {
 }
 
 /* itoa: transform an integer to character form */
-void itoa_original (int n, char s[]) {
+void itoa (int n, char s[]) {
   int i, sign = NO;
   int is_max = NO;
 
