@@ -17,7 +17,7 @@ int main(void) {
       printf("You entered: %.*s\n", ungets(res) - 1, res);
 }
 
-void ungetch(int); /* let's ungetch() and clear() to be visible for get_line_buffered() */
+void ungetch(int); /* let's ungetch() to be visible for get_line_buffered() */
 
 /* get_line_buffered(): store the string also into a buffer */
 int get_line_buffered(unsigned char buf[], unsigned lim) {
