@@ -26,12 +26,12 @@ int main(void) {
 }
 
 double atof(const unsigned char s[]) {
-  enum status { NONE = -1, NO = 0, YES };
+  enum status { NO = 0, YES };
   double base = 10.0;
   double res, power = 1.0;
   int have_dot = NO;
   int have_exp = NO;
-  int exp = 0, pos = NONE;
+  int exp = 0;
   int i, m_sign, e_sign;
 
   for (i = 0; isspace(s[i]); i++); /* skip leading delimiters */
@@ -44,10 +44,9 @@ double atof(const unsigned char s[]) {
       res = res * base + (s[i] - '0');
       if (have_dot) power *= base;
     }
-    else if (s[i] == '.' && !have_dot) {
+    else if (s[i] == '.' && !have_dot)
       have_dot = YES;
-      pos = i;
-    }
+
     else if (s[i] == 'e' || s[i] == 'E') {
       have_exp = YES;
       i++; /* skip exponent sign */
@@ -62,11 +61,7 @@ double atof(const unsigned char s[]) {
     if (isdigit(s[i])) exp = exp * base + s[i] - '0';
     i++;
   }
-  
-  if (have_dot && have_exp && e_sign ) exp + pos;
-  else if (exp > pos) exp - pos;
-  else pos - exp;
-  
+
   res = m_sign * res / power;
 
   for (i = 0; have_exp && i < exp; ++i) {
