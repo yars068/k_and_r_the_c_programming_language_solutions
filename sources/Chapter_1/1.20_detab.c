@@ -36,7 +36,6 @@ int main(void) {
 
   while ((len = get_line(buf)) > 0) {
     pos = res_pos = 0;
-    for (pos = 0; pos < MAXLEN; ++pos) result[pos] = 0;
     while (pos < len) {
       if (buf[pos] == '\t') {
         space_count = get_num_to_next_tab(res_pos);
@@ -47,6 +46,7 @@ int main(void) {
       ++pos;
     }
     printf("Result:\n%s\n", result);
+    for (pos = 0; pos < MAXLEN; ++pos) result[pos] = 0;
   }
   return 0;
 }
