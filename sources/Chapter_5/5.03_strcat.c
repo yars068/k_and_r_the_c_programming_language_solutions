@@ -26,8 +26,8 @@ int str_cat(char *src, char *str) {
   int len = 0;
 
   while (*src) {
-    len++; /* to skip a ending '\0' */
-    src++; /* to concatenate, this should be overwritten */
+    len++; /* count the length, going to the end of line */
+    src++; /* to concatenate, trailing '\0' should be overwritten */
   }
 
   while (*src++ = *str++)
