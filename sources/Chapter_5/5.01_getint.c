@@ -8,22 +8,24 @@
 int getint(int *pn);
 
 int main(void) {
+  int state;
   int *bufptr;
   int buf;
   bufptr = &buf;
 
-  while (getint(bufptr) != EOF)
-    printf("Your input is \"%d\"\n", buf);
-
+  while ((state = getint(bufptr)) != EOF) {
+    if (state) printf("Your input is \"%d\"\n", buf);
+    else printf("This is not a number\n");
+}
   return 0;
 }
 
 int getch(void);
 void ungetch(int);
 
+#define NOT_NUMBER 0
 /* getint(): get next integer from input into *pn */
 int getint(int *pn) {
-  enum state { NOT_NUMBER = 0 };
   int c, sign;
 
   while (isspace(c = getch())); /* skip whitespaces */
