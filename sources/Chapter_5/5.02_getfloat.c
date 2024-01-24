@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 
 /* Lesson 5.2. Write getfloat(), the floating-point analog of getint(). */
 /* What type does getfloat return as its function value? */
@@ -33,7 +34,6 @@ void ungetch(int);
 int getfloat(double *pn) {
   enum state { NO, YES };
   int c, sign;
-  int dot = NO;
   double fr = 0;
   double base = 10;
 
@@ -48,24 +48,18 @@ int getfloat(double *pn) {
   sign = (c == '-') ? -1 : 1;
 
   if (!isdigit(c) && c != '.') ungetch(c);
- 
+
   for (*pn = 0; isdigit(c); c = getch()) {
     *pn = base * *pn + (c - '0');
   }
-  printf("c = %c\n", c);
-  if (c == '.') {
-    dot = YES;
-    fr = 0;
-    while (isdigit(c = getch())) {
-      printf("fr: c=%c\n", c);
-      //if (isdigit(c)) {
-        fr = fr + (fr + (c - '0')) / base;
-        base *= base;
-      //}
-      //else dot = NO;
-      printf("fr = %g\n", fr);
+
+  for (fr = 0; c == '.' || isdigit(c); c = getch()) {
+    if (isdigit(c)) {
+      fr += (c - '0') / base;
+      base *= 10;
     }
   }
+
   *pn += fr;
   *pn *= sign;
   if (c != EOF) ungetch(c);
