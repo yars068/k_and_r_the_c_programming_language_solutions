@@ -51,6 +51,7 @@ int readlines_v1(char **lineptr, int maxlines) {
   return nlines;
 }
 
+/* readlines: read the lines, version 2 */
 int readlines(char **lineptr, char *strbuf, int maxlines) {
   int len, nlines;
   char *p = strbuf;
