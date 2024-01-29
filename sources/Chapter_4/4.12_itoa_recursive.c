@@ -50,7 +50,7 @@ int itoa(int number, char buf[]) {
   
   dtoa(number, buf);
   if (is_max && sign) /* Correct the last digit, when transforming INT_MIN */
-    buf[i] = (number % 10) + 1 + '0';
+    buf[i - 1] = (number % 10) + 1 + '0';
 
   return i;
 
