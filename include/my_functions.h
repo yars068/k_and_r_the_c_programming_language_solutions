@@ -49,12 +49,27 @@ int atoi(char buf[], int len) {
 }
 #endif
 
+#ifdef _HAVE_ASK_LINE_H
+int get_line(char [], int);
+/* ask_line: ask the user to input text data */
+int ask_line(char buf[], int lim, char msg[]) {
+  printf("%s", msg);
+  return get_line(buf, lim);
+}
+#endif
+
 /* get_line: store the input stream to array buf */
-int get_line(char buf[], int lim, const char msg[]) {
+#ifndef _HAVE_ASK_LINE_H
+int get_line(char buf[], int lim, char msg[]) {
+#endif
+#ifdef _HAVE_ASK_LINE_H
+int get_line(char buf[], int lim) {
+#endif
   int i = 0;
   char c = '\0';
-
+#ifndef _HAVE_ASK_LINE_H
   printf("%s ", msg);
+#endif
   while (i < lim - 1 && ((c = getchar()) != EOF) && c != '\n')
     buf[i++] = c;
 
