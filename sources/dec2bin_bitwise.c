@@ -1,30 +1,10 @@
 #include <stdio.h>
 #include <ctype.h>
-#include <limits.h>
-#include "../include/custom_functions.h"
 #define BUFSIZE 66 /* 8 bits per byte, 8 bytes total plus a '\n' and '\0' */ 
+#include "../include/my_functions.h"
 
-/* dec2bin: transform a decimal integer to binary form */
-
-int dtob(long number, unsigned char res[]) {
-  unsigned base = 2;
-  int i, n, len = 0;
-
-  for (n = 0; n < BUFSIZE; n++) res[n] = '\0'; /* reset */
-
-  for (n = 0; (power(base, n) < number); n++);
-  if (number < power(base, n)) len = n - 1;
-  else len = n; /* Get the number of digits */
-
-  while (number) {
-    i = number & ~(~0 << 1);
-    number = number >> 1; /* Actually, this is same as division by 2 */
-    if (i) res[len--] = '1';
-    else res[len--] = '0';
-  }
-
-  return len;
-}
+int get_line(char [], int, const char []);
+int dtob(long, unsigned char []);
 
 int main(void) {
   const unsigned char msg[] = "Enter decimal number:";
@@ -46,4 +26,25 @@ int main(void) {
     j = 0;
   }
   return 0;
+}
+
+/* dtob: transform a decimal integer to binary character form */
+int dtob(long number, unsigned char res[]) {
+  unsigned base = 2;
+  int i, n, len = 0;
+
+  for (n = 0; n < BUFSIZE; n++) res[n] = '\0'; /* reset */
+
+  for (n = 0; (power(base, n) < number); n++);
+  if (number < power(base, n)) len = n - 1;
+  else len = n; /* Get the number of digits */
+
+  while (number) {
+    i = number & ~(~0 << 1);
+    number = number >> 1; /* Actually, this is same as division by 2 */
+    if (i) res[len--] = '1';
+    else res[len--] = '0';
+  }
+
+  return len;
 }
