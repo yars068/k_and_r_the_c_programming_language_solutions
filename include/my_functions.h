@@ -32,6 +32,8 @@ void reverse(char s[], int length) {
   for (i = 0; s[i] != '\0'; ++i) s[i] = buf[i];
 }
 
+#ifndef _STDLIB_H
+#define _CUSTOM_ATOI_H 1
 /* atoi: transform a character representation of integer number to number itself */
 int atoi(char buf[], int len) {
   int mul = 1;
@@ -45,6 +47,7 @@ int atoi(char buf[], int len) {
   }
   return res;
 }
+#endif
 
 /* get_line: store the input stream to array buf */
 int get_line(char buf[], int lim, const char msg[]) {
