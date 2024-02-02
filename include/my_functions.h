@@ -1,8 +1,5 @@
-#ifndef _CTYPE_H
-#include <ctype.h>
-#endif
 #ifndef _STDIO_H
-#include <stdio.h>
+#  include <stdio.h>
 #endif
 
 /* power: raises a number to a power */
@@ -16,6 +13,10 @@ long power(const unsigned base, int n) {
   return p;
 }
 
+#ifndef BUFSIZE
+#  define BUFSIZE 1024
+#endif
+
 /* reverse: revert the string s */
 void reverse(char s[], int length) {
   char buf[BUFSIZE];
@@ -24,36 +25,51 @@ void reverse(char s[], int length) {
   j = length;
 
   while (j >= 0) {
-    if (s[j] != '\n'&& s[j] != '\0') buf[i++] = s[j];
+    if (s[j] != '\n' && s[j] != '\0') buf[i++] = s[j];
     --j;
   }
 
   for (i = 0; s[i] != '\0'; ++i) s[i] = buf[i];
 }
 
-/* chartodig: transform a character representation of number to number itself */
-int chartodig(char buf[], int len) {
+#ifndef _STDLIB_H
+#define _CUSTOM_ATOI_H 1
+/* atoi: transform a character representation of integer number to number itself */
+int atoi(char buf[], int len) {
   int mul = 1;
   int i, res = 0;
-  int ret = -1;
 
   for (i = len; i >= 0; --i) {
     if (buf[i] >= '0' && buf[i] <= '9') {
       res += (buf[i] - '0') * mul;
       mul *= 10;
-      ret = 0;
     }
   }
-  if (ret == -1) return ret;
-  else return res;
+  return res;
 }
+#endif
+
+#ifdef _HAVE_ASK_LINE_H
+int get_line(char [], int);
+/* ask_line: ask the user to input text data */
+int ask_line(char buf[], int lim, char msg[]) {
+  printf("%s", msg);
+  return get_line(buf, lim);
+}
+#endif
 
 /* get_line: store the input stream to array buf */
-int get_line(char buf[], int lim, const char msg[]) {
+#ifndef _HAVE_ASK_LINE_H
+int get_line(char buf[], int lim, char msg[]) {
+#endif
+#ifdef _HAVE_ASK_LINE_H
+int get_line(char buf[], int lim) {
+#endif
   int i = 0;
   char c = '\0';
-
+#ifndef _HAVE_ASK_LINE_H
   printf("%s ", msg);
+#endif
   while (i < lim - 1 && ((c = getchar()) != EOF) && c != '\n')
     buf[i++] = c;
 
@@ -63,9 +79,13 @@ int get_line(char buf[], int lim, const char msg[]) {
   return i;
 }
 
+#ifndef _CTYPE_H
+#  include <ctype.h>
+#endif
+
 /* htol: transform hexadecimal number in the character form to a number with type lond int */
 long int htol(unsigned char buf[]) {
-  const int base = 16 /* = 2^4 */
+  const int base = 16; /* = 2^4 */
   long int ret = 0;
   long int i;
   unsigned short c;
@@ -93,22 +113,55 @@ long int htol(unsigned char buf[]) {
 }
 
 /* str_cmp: compare two strings */
-int str_cmp(char w1[], char w2[]) {
-  enum boolean {FALSE = 0, TRUE };
+int str_cmp(unsigned char w1[], unsigned char w2[]) {
+  enum boolean { FALSE, TRUE };
   int i = 0;
-  int j = 0;
-  int ret = TRUE;
 
-  while ((ret == TRUE) && (w1[i] == w2[j]) && (w1[i] != '\0') && (w2[j] != '\0')) {
-    if ((w1[i] == w2[j]) && (i == j))
-      ret = TRUE;
+  while (w1[i] && (w1[i] == w2[i])) i++;
+  if (w1[i] == w2[i]) return TRUE;
 
-    if (w1[i] != '\0') i++;
-    if (w2[j] != '\0') j++;
-    if ((i != j) || (w1[i] != w2[j]))
-      ret = FALSE;
+  return FALSE;
+}
+
+/* fact: calculate factorial */
+int fact(int n) {
+  int ret = 1;
+
+    if (n == 0) ret = 1;
+    else ret = n * (fact(n - 1));
+
+  return ret;
+}
+
+/* get_power: determine most closer power of number */
+int get_power(const unsigned base, long number) {
+  int n = 32;
+  long p = 0;
+
+  for (n = 32; n > 0 && (p = power(base, n)) > number; --n);
+
+  return n;
+}
+
+/* dtob: transform a decimal integer to binary character form */
+int dtob(long divisible, unsigned char res[]) {
+const unsigned long base = 2; /* base of bynary number system */
+unsigned long remainder = 0;
+int len, n;
+
+  for (n = 0; n < BUFSIZE; n++) res[n] = '\0'; /* reset */
+
+  for (n = 0; (power(base, n) < divisible); n++);
+  if (divisible < power(base, n)) len = n - 1;
+  else len = n;
+
+  while (divisible) {
+    remainder = divisible % base;
+    divisible /= base;
+    if (remainder) res[len] = '1';
+    else res[len] = '0';
+    len--;
   }
 
-  if ((i != j) && (w1[i] != w2[j])) ret = FALSE;
-  return ret;
+  return len; /* 1 if success, otherwise 0 */
 }

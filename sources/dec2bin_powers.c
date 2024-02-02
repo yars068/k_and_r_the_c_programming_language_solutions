@@ -1,11 +1,37 @@
 #include <stdio.h>
-#include <limits.h>
 #include <ctype.h>
-#include "../include/custom_functions.h"
 #define BUFSIZE 66 /* 8 bits per byte, 8 bytes total plus a '\n' and '\0' */ 
+#include "../include/my_functions.h"
 
 /* dec2bin: translate decimal integer to binary */
 
+int get_line(char [], int, const char []);
+int get_power(const unsigned, long);
+int dtob(long, char []);
+
+int main(void) {
+  const unsigned char msg[] = "Enter decimal number:";
+  unsigned char buf[BUFSIZE] = {'\0'};
+  long number = 0;
+  unsigned len = 0;
+  int i, j = 0;
+
+  while (len = get_line(buf, BUFSIZE, msg)) {
+    for (i = len; i >= 0; --i) {
+      if (isdigit(buf[i]))
+        number += power(10, i) * (buf[j++] - '0');
+    }
+    printf("Decimal number is: %d\n", number);
+    if (dtob(number, buf) >= 0)
+      printf("Binary number is %s\n", buf);
+
+    number = 0; /* reset */
+    j = 0;
+  }
+  return 0;
+}
+
+/* get_power: determine most closer power of number */
 int get_power(const unsigned base, long number) {
   int n = 32;
   long p = 0;
@@ -15,6 +41,7 @@ int get_power(const unsigned base, long number) {
   return n;
 }
 
+/* dtob: transform the decimal integer to an its binary character representation */
 int dtob(long number, char res[]) {
   const unsigned base = 2;
   long sub = number;
@@ -37,26 +64,4 @@ int dtob(long number, char res[]) {
 
   reverse(res, n_max);
   return n_max;
-}
-
-int main(void) {
-  const unsigned char msg[] = "Enter decimal number:";
-  unsigned char buf[BUFSIZE] = {'\0'};
-  long number = 0;
-  unsigned len = 0;
-  int i, j = 0;
-
-  while (len = get_line(buf, BUFSIZE, msg)) {
-    for (i = len; i >= 0; --i) {
-      if (isdigit(buf[i]))
-        number += power(10, i) * (buf[j++] - '0');
-    }
-    printf("Decimal number is: %d\n", number);
-    if (dtob(number, buf) >= 0)
-      printf("Binary number is %s\n", buf);
-
-    number = 0; /* reset */
-    j = 0;
-  }
-  return 0;
 }
