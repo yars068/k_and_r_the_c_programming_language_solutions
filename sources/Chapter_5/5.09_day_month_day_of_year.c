@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #define BUFSIZE 100
 
-/* Lesson 5.8. There is no error checking in day_of_year() and month_day(). Remedy this defect */
+/* Lesson 5.9. Revise the functions day_of_year() and month_day() using pointers */
 
 int get_line(char *, int);
 void clear(char *);
