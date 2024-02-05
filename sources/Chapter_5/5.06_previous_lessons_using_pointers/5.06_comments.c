@@ -74,7 +74,7 @@ int main(void) {
           len -= shift(bp, end);
           bp = end;
         }
-        if (*bp && quote) bp++;
+        if (*bp) bp++;
       }
     }
     //printf("==== Result: ====\n%s\n", buf);
