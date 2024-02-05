@@ -95,7 +95,7 @@ char *substrf(char *s, char *p) {
   while (*s) {
     if (*s == *p) {
       if (res == NULL) res = s;
-      for (i = 0; *s && *(p + i) && *s == *(p + i); i++) s++;
+      for (i = 0; *s && *(p + i) && *s == *(p + i); i++, s++);
 
       if (i > 0 && !*(p + i)) return res;
       else res = NULL;
