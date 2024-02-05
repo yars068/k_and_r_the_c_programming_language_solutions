@@ -102,7 +102,7 @@ char *substrf(char *s, char *p) {
     }
     s++;
   }
-  return res;
+  return NULL;
 }
 
 /* substrl: return a pointer to last position in s, where p occurs, or NULL if no occurence */
