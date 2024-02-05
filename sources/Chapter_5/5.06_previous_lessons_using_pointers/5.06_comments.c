@@ -107,16 +107,13 @@ char *substrf(char *s, char *p) {
 
 /* substrl: return a pointer to last position in s, where p occurs, or NULL if no occurence */
 char *substrl(char *s, char *p) {
-  char *res = NULL;
   int i;
 
   while (*s) {
     if (*s == *p) {
-      if (res == NULL) res = s;
       for (i = 0; *s && *(p + i) && *s == *(p + i); i++) s++;
 
       if (i > 0 && !*(p + i)) return s;
-      else res = NULL;
     }
     s++;
   }
