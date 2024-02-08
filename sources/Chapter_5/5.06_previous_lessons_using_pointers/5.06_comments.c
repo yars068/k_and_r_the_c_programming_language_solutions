@@ -14,74 +14,60 @@ int shift(char *, char *);
 void clear(char *);
 
 int main(void) {
-  enum { SINGLE_QUOTE, DOUBLE_QUOTE, STRING_COMMENT, INLINE_BEGIN, INLINE_END};
-  enum { NO, YES };
+  char *dbgtxt[] = { "NONE", "SINGLE_QUOTE", "DOUBLE_QUOTE", "STRING_COMMENT", "INLINE_BEGIN", "INLINE_END", NULL };
+  enum { NONE, SINGLE_QUOTE, DOUBLE_QUOTE, STRING_COMMENT, INLINE_BEGIN, INLINE_END};
   char buf[BUFSIZE];
-  char *bp;
   char *msg = "Enter text: ";
-  char *patterns[] = { "\'" , "\"", "//", "/*", "*/", NULL };
+  char *patterns[] = { "", "\'" , "\"", "//", "/*", "*/", NULL };
   const int ptsz = 2; /* maximal pattern size (i.e., its length) */
   char *start, *end;
-  char *bufend;
-  int len;
-  int comment = NO;
-  int quote = NO;
+  int len, lineno = 0;
+  int state = NONE;
 
   while ((len = get_line(buf, BUFSIZE)) != EOF && len) {
-    bp = buf;
-    bufend = buf + len;
-    while (*bp && len) {
-      for (int i = SINGLE_QUOTE; *buf && i <= INLINE_END; i++) {
-        if (quote != SINGLE_QUOTE && (start = substrf(bp, *(patterns + i))) != NULL && i == SINGLE_QUOTE) {
-          quote = SINGLE_QUOTE;
-          bp = start;
-          fprintf(stderr, "processing \"%s\", len = %d, quote = YES, bp points to buf[%d] = \'%c\'\n", buf, len, start - buf, *start);
+    for (char *bp = buf; *bp; *bp++) {
+      if ((start = substrf(buf, *(patterns + SINGLE_QUOTE))) != NULL) {
+        bp += start - buf;
+        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + SINGLE_QUOTE), start - buf);
+        if ((end = substrl(buf, *(patterns + SINGLE_QUOTE))) != NULL) {
+          fprintf(stderr, "line %d: ending \"%s\" at pos %d\n", lineno, *(dbgtxt + SINGLE_QUOTE), end - buf);
+          fprintf(stderr, "line %d is: %s\n", lineno, buf);
+          bp += end - buf;
         }
-        if (quote == SINGLE_QUOTE && (end = substrl(bp, *(patterns + i))) != NULL && i == SINGLE_QUOTE) {
-          quote = NO;
-          bp = end;
-          fprintf(stderr, "processing \"%s\", len = %d, quote = NO, bp points to buf[%d] = \'%c\'\n", buf, len, end - buf, *end);
+      }
+      else if ((start = substrf(buf, *(patterns + DOUBLE_QUOTE))) != NULL) {
+        bp += start - buf;
+        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + DOUBLE_QUOTE), start - buf);
+        if ((end = substrl(buf, *(patterns + DOUBLE_QUOTE))) != NULL) {
+          fprintf(stderr, "line %d: ending \"%s\" at pos %d\n", lineno, *(dbgtxt + DOUBLE_QUOTE), end - buf);
+          fprintf(stderr, "line %d is: %s\n", lineno, buf);
+          bp += end - buf;
         }
-        if (quote != DOUBLE_QUOTE && (start = substrf(bp, *(patterns + i))) != NULL && i == DOUBLE_QUOTE) {
-          quote = DOUBLE_QUOTE;
-          bp = start;
-          fprintf(stderr, "processing \"%s\", len = %d, quote = YES, bp points to buf[%d] = \'%c\'\n", buf, len, start - buf, *start);
+      }
+      else if ((start = substrf(buf, *(patterns + STRING_COMMENT))) != NULL) {
+        bp += start - buf;
+        len = shift(start, (buf + len - 1));
+        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + STRING_COMMENT), start - buf);
+        fprintf(stderr, "line %d is: %s\n", lineno, buf);
+      }
+      else if ((start = substrf(buf, *(patterns + INLINE_BEGIN))) != NULL) {
+        bp += start - buf;
+        //FIXME: shift() on separate lines;
+        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + INLINE_BEGIN), start - buf);
+        fprintf(stderr, "line %d is: %s\n", lineno, buf);
+        if ((end = substrl(buf, *(patterns + INLINE_END))) != NULL) {
+          fprintf(stderr, "line %d: ending \"%s\" at pos %d\n", lineno, *(dbgtxt + INLINE_END), end - buf);
+          fprintf(stderr, "line %d is: %s\n", lineno, buf);
+          bp += end - buf;
+          len = shift(start, end + 1);
         }
-        if (quote == DOUBLE_QUOTE && (end = substrl(bp, *(patterns + i))) != NULL && i == DOUBLE_QUOTE) {
-          quote = NO;
-          bp = end;
-          fprintf(stderr, "processing \"%s\", len = %d, quote = NO, bp points to buf[%d] = \'%c\'\n", buf, len, end - buf, *end);
-        }
-        if (!quote && (start = substrf(bp, *(patterns + i))) != NULL && i == STRING_COMMENT) {
-          len -= shift(start, bufend);
-          bp = start;
-          comment = STRING_COMMENT;
-        }
-        if (comment != STRING_COMMENT && !quote && (start = substrf(bp, *(patterns + i))) != NULL && i == INLINE_BEGIN) {
-          if ((end = substrl(start + ptsz, *(patterns + (i = INLINE_END)))) != NULL) {
-            comment = NO;
-            len -= shift(start, end);
-            bp = end;
-          }
-          else if (comment != INLINE_END && end == NULL) {
-            comment = INLINE_END;
-            len -= shift(start, bufend);
-            bp = start;
-          }
-        }
-        if (len && !quote && comment == INLINE_END && (end = substrl(buf, *(patterns + (i = INLINE_END)))) != NULL) {
-          comment = NO;
-          len -= shift(bp, end);
-          bp = end;
-        }
-        if (*bp) bp++;
       }
     }
+    fprintf(stderr, "line %d: length is: %d\n", lineno, len);
+    lineno++;
     //printf("==== Result: ====\n%s\n", buf);
-    printf("%s", buf);
+    if (len) printf("%s", buf);
     clear(buf);
-    quote = NO;
-    if (comment == STRING_COMMENT) comment = NO;
   }
   putchar('\n');
   return EXIT_SUCCESS;
@@ -123,7 +109,6 @@ char *substrl(char *s, char *p) {
 /* shift: move characters from right to left, starting from start */
 int shift(char *start, char *end) {
   while (*start++ = *end++);
-
   return end - start;
 }
 
