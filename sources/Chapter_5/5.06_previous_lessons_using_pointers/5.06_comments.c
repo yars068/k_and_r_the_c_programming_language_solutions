@@ -10,12 +10,11 @@ int ask_line(char *, int, char *);
 int get_line(char *, int);
 char *substrf(char *, char *);
 char *substrl(char *, char *);
-int shift(char *, char *);
+int shrink(char *, char *);
 void clear(char *);
 
 int main(void) {
-  char *dbgtxt[] = { "NONE", "SINGLE_QUOTE", "DOUBLE_QUOTE", "STRING_COMMENT", "INLINE_BEGIN", "INLINE_END", NULL };
-  enum { NONE, SINGLE_QUOTE, DOUBLE_QUOTE, STRING_COMMENT, INLINE_BEGIN, INLINE_END};
+  enum { NONE, SINGLE_QUOTE, DOUBLE_QUOTE, STRING_BEGIN, INLINE_BEGIN, INLINE_END};
   char buf[BUFSIZE];
   char *msg = "Enter text: ";
   char *patterns[] = { "", "\'" , "\"", "//", "/*", "*/", NULL };
@@ -26,50 +25,40 @@ int main(void) {
 
   while ((len = get_line(buf, BUFSIZE)) != EOF && len) {
     for (char *bp = buf; *bp; *bp++) {
-      if ((start = substrf(buf, *(patterns + SINGLE_QUOTE))) != NULL) {
-        bp += start - buf;
-        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + SINGLE_QUOTE), start - buf);
-        if ((end = substrl(buf, *(patterns + SINGLE_QUOTE))) != NULL) {
-          fprintf(stderr, "line %d: ending \"%s\" at pos %d\n", lineno, *(dbgtxt + SINGLE_QUOTE), end - buf);
-          fprintf(stderr, "line %d is: %s\n", lineno, buf);
+      char *quote = NULL;
+      char *comment = NULL;
+      int i, j;
+      for (i = SINGLE_QUOTE; i <= DOUBLE_QUOTE && (quote = substrf(bp, *(patterns + i))) == NULL; i++);
+
+      for (j = STRING_BEGIN; j <= INLINE_BEGIN && (comment = substrf(bp, *(patterns + j))) == NULL; j++);
+
+      if ((quote != NULL) && (comment != NULL) && (comment < quote)) {
+        if (j == STRING_BEGIN) {
+          bp += comment - buf;
+          len = shrink(bp, buf + len);
+        }
+        else if ((j == INLINE_BEGIN) && (end = substrl(comment, *(patterns + INLINE_END))) != NULL) {
           bp += end - buf;
+          len = shrink(bp, end);
         }
       }
-      else if ((start = substrf(buf, *(patterns + DOUBLE_QUOTE))) != NULL) {
-        bp += start - buf;
-        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + DOUBLE_QUOTE), start - buf);
-        if ((end = substrl(buf, *(patterns + DOUBLE_QUOTE))) != NULL) {
-          fprintf(stderr, "line %d: ending \"%s\" at pos %d\n", lineno, *(dbgtxt + DOUBLE_QUOTE), end - buf);
-          fprintf(stderr, "line %d is: %s\n", lineno, buf);
-          bp += end - buf;
-        }
+      else if ((quote != NULL) && (end = substrl(quote, *(patterns + i))) != NULL) bp += end - buf;
+      if ((comment != NULL) && (j == STRING_BEGIN)) {
+        bp += comment - buf;
+        len = shrink(bp, buf + len);
       }
-      else if ((start = substrf(buf, *(patterns + STRING_COMMENT))) != NULL) {
-        bp += start - buf;
-        len = shift(start, (buf + len - 1));
-        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + STRING_COMMENT), start - buf);
-        fprintf(stderr, "line %d is: %s\n", lineno, buf);
+      else if ((j == INLINE_BEGIN) && (end = substrl(comment, *(patterns + INLINE_END))) != NULL) {
+        bp += end - buf;
+        len = shrink(bp, end);
       }
-      else if ((start = substrf(buf, *(patterns + INLINE_BEGIN))) != NULL) {
-        bp += start - buf;
-        //FIXME: shift() on separate lines;
-        fprintf(stderr, "line %d: starting \"%s\" at pos %d\n", lineno, *(dbgtxt + INLINE_BEGIN), start - buf);
-        fprintf(stderr, "line %d is: %s\n", lineno, buf);
-        if ((end = substrl(buf, *(patterns + INLINE_END))) != NULL) {
-          fprintf(stderr, "line %d: ending \"%s\" at pos %d\n", lineno, *(dbgtxt + INLINE_END), end - buf);
-          fprintf(stderr, "line %d is: %s\n", lineno, buf);
-          bp += end - buf;
-          len = shift(start, end + 1);
-        }
-      }
+      if (comment == NULL && quote == NULL) bp += len;
     }
-    fprintf(stderr, "line %d: length is: %d\n", lineno, len);
     lineno++;
-    //printf("==== Result: ====\n%s\n", buf);
+    // printf("==== Result: ====\n%s\n", buf);
     if (len) printf("%s", buf);
     clear(buf);
   }
-  putchar('\n');
+  //putchar('\n');
   return EXIT_SUCCESS;
 }
 
@@ -106,8 +95,8 @@ char *substrl(char *s, char *p) {
   return NULL;
 }
 
-/* shift: move characters from right to left, starting from start */
-int shift(char *start, char *end) {
+/* shrink: shrink the part of the line starting from start */
+int shrink(char *start, char *end) {
   while (*start++ = *end++);
   return end - start;
 }
