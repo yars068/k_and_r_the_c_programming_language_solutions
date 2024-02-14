@@ -60,7 +60,7 @@ int find_seq(int nums[], int seq[]) {
   int i, length = 0;
   for (i = 0, length = NEXT; is_seq(nums[i], nums[length]); i++) {
     if (length <= MAXARGS) {
-      for (int k = i ; k <= length; k++) seq[k] = nums[k];
+      for (int k = 0; k <= length; k++) seq[k] = nums[k];
       length++;
     }
   }
