@@ -96,7 +96,7 @@ int unescape(char *s, char *t) {
 int get_line(char *buf, int lim) {
   char *tmp = buf;
 
-  while (lim-- && (*tmp = getchar()) != EOF && *tmp != '\n') tmp++;
+  while (lim-- && (*tmp = getchar()) != EOF && *tmp++ != '\n');
   *tmp++ = '\0';
   return tmp - buf;
 }
