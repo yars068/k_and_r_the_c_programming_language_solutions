@@ -50,13 +50,20 @@ int entab(char *buf, int tabsize) {
     else {
       num_spaces = get_count_spaces(tmp);
       tmp += num_spaces;
-      if (num_spaces >= tabsize / 2) {
-        *buf++ = TAB;
-        num_spaces -= tabsize / 2;
+      while (num_spaces) {
+        if (num_spaces > tabsize) {
+          *buf++ = TAB;
+          num_spaces -= tabsize;
+        }
+        else if (num_spaces > tabsize / 2) {
+          *buf++ = TAB;
+          num_spaces -= tabsize / 2;
+        }
+        else {
+          *buf++ = SPACE;
+          num_spaces--;
+        }
       }
-
-      if (num_spaces)
-        while (num_spaces--) *buf++ = SPACE;
     }
   }
 
