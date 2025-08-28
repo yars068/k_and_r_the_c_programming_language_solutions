@@ -30,7 +30,8 @@ int get_num_to_next_tab(int current_pos) {
 }
 
 int main(void) {
-  char buf[MAXLEN], result[MAXLEN];
+  char buf[MAXLEN] = { '\0' };
+  char result[MAXLEN] = { '\0' };
   int i, len, pos, res_pos, space_count;
   i = len = pos = res_pos = space_count = 0;
 
