@@ -1,14 +1,13 @@
 #include <stdio.h>
-#include <ctype.h>
 #include <stdlib.h>
 
 #define MAXLEN 1000
 #define TABSIZE 8
 
 /* Lesson 5.6 Rewrite lesson 1.21 using pointers */
-/* Write a program 'entab', that replace sequences of blanks to a
-   minimal number of blanks and tab stops, keep the view of printed
-   text unchanged */
+/* Write a program 'entab', that replace sequences of blanks to a   */
+/* minimal number of blanks and tab stops, keep the view of printed */
+/* text unchanged */
 
 int get_line(char *buf, int lim);
 int ask_line(char *buf, int lim, char *msg);
@@ -70,7 +69,7 @@ int entab(char *buf, int tabsize) {
   return tmp - start;
 }
 
-/* get_count-spaces: return count of spaces to first non-space character */
+/* get_count_spaces: return count of spaces to first non-space character */
 int get_count_spaces(char *buf) {
   int i = 0;
   while (*buf++ == SPACE) i++;
@@ -87,6 +86,7 @@ int get_line(char *buf, int lim) {
   return tmp - buf;
 }
 
+/* ask_line: ask the question to user to input the data */
 int ask_line(char *buf, int lim, char *msg) {
 
   printf("%s", msg);
