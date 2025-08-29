@@ -1,61 +1,88 @@
 #include <stdio.h>
-#include <ctype.h>
+#include <stdlib.h>
+
 #define BUFSIZE 1024
 
 /* Lesson 5.6. Rewrite lesson 1.20 using pointers */
-/* Lesson 1.20. Write the program 'detab', that replaces a tabulations 
-   with a needed number of spaces */
+/* Lesson 1.20. Write the program 'detab', that replaces a tabulations */
+/* with a proper number of spaces */
 
-int get_line(char *, int);
-int get_space_count(char *, const char *);
+int ask_line(char *buf, int lim, char *msg);
+int get_line(char *buf, int lim);
+int detab(char *buf);
 
 int main(void) {
-  enum state { YES = 0, NO };
-  int len = NO;
-  char buf[BUFSIZE]; char res[BUFSIZE];
-  char *bp = buf, *res_p = res;
+  char buf[BUFSIZE];
+  char *msg = "Enter a string to detabbing:\n";
+  int len = 0;
 
-  while (len) {
-    printf("Enter a string: \n");
-    if (len = get_line(buf, BUFSIZE)) {
-      while (*bp) {
-        while (!isblank(*bp)) *res_p++ = *bp++; /* skip while not a tab */
-        if (*bp == '\t') {
-          int space_num = get_space_count(res, res_p);
-          while (space_num--) *res_p++ = ' ';
-        }
-        bp++;
-      }
+  while(ask_line(buf, BUFSIZE, msg)) {
+    if (detab(buf)) {
+      printf("Detabbed text:\n%s\n", buf);
     }
-    printf("Result:\n%.*s\n", res_p - res, res);
-    while (bp - buf) *bp-- = '\0'; /* clear buffers */
-    while (res_p - res) *res_p-- = '\0';
+    else {
+      printf("Can\'t detab it, exiting\n");
+      return EXIT_FAILURE;
+    }
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
-#ifndef TABSTOP
-#define TABSTOP 8
-#endif
-/* get_space_cont: returns the number of spaces needed to replace a tab */
-int get_space_count(char *start, const char *current) {
-  int tab_pos = 0;
-  int tab_num = 0;
-  int space_count;
+#define TAB '\t'
+#define SPACE ' '
 
-  while (tab_pos <= (current - start)) {
-    tab_pos = tab_num * TABSTOP;
-    space_count = tab_pos - (current - start);
-    ++tab_num;
+int get_space_count(char *buf, char *start);
+
+/* detab: replace a tabstops by proper count of spaces */
+int detab(char *buf) {
+  char tmpbuf[BUFSIZE] = { '\0' };
+  char *tmp = tmpbuf;
+  int len = 0;
+
+  /* First, save input-output buffer to a local buffer, then clear it */
+  for (int i = 0; *(tmp + i) = *(buf + i); i++) 
+    *(buf + i) = '\0';
+
+  while (*tmp) {
+    if (*tmp != TAB) {
+      printf("\'%c\' is not a tab\n", *tmp);
+      *buf++ = *tmp++;
+      len++;
+    }
+    else {
+      int spaces = get_space_count(tmp, tmpbuf);
+      printf("\'%c\' is a tab, to replace need %d spaces\n", *tmp, spaces);
+      while (spaces--) {
+        *buf++ = SPACE;
+        len++;
+      }
+      *tmp++; /* skip current position, because here is a tabstop */
+    }
   }
-  return space_count;
+  return len;
+}
+
+#define TABSIZE 8
+
+/* get_space_count: returns the number of spaces needed to fill the current tabstop */
+int get_space_count(char *buf, char *start) {
+  int spaces = (buf - start) % TABSIZE;
+
+  return spaces;
 }
 
 /* get_line: store the input stream to array */
 int get_line(char *buf, int lim) {
-  char *start = buf;
+  char *tmp = buf;
 
-  while (lim-- && (*buf = getchar()) != EOF && *buf++ != '\n');
-  *buf = '\0';
-  return buf - start;
+  while (lim-- && (*tmp = getchar()) != EOF && *tmp++ != '\n');
+  *tmp++ = '\0';
+  return tmp - buf;
+}
+
+/* ask_line: ask the question to user */
+int ask_line(char *buf, int lim, char *msg) {
+
+  printf("%s", msg);
+  return get_line(buf, lim);
 }
