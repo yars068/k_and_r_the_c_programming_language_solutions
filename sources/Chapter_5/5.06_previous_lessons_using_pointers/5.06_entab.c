@@ -28,46 +28,47 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 
-/* entab: replace sequences of spaces by proper number of tabstops and spaces, */
-/* keeping input looks unchanged */
 #define SPACE ' '
 #define TAB '\t'
 int get_count_spaces(char *buf);
+static int eval_space_count(char *buf, char *start, int tabsize);
 
+/* entab: replace sequences of spaces by proper number of tabstops and spaces, */
+/* keeping input looks unchanged */
 int entab(char *buf, int tabsize) {
-  char tmpbuf[MAXLEN] = { '\0' };
+  char tmpbuf[BUFSIZE] = { '\0' };
   char *tmp = tmpbuf;
 
   /* First, copy input buffer to local buffer and clear input buffer */
   for (int i = 0; *(tmp + i) = *(buf + i); i++) *(buf + i) = '\0';
 
-  char *start = tmp;
   /* Then, entab it */
+  char *start = tmp;
   while (*tmp) {
-    int num_spaces = 0;
     if (*tmp != SPACE) *buf++ = *tmp++;
     else {
-      num_spaces = get_count_spaces(tmp);
-      tmp += num_spaces;
-      while (num_spaces) {
-        if (num_spaces > tabsize) {
-          *buf++ = TAB;
-          num_spaces -= tabsize;
-        }
-        else if (num_spaces > tabsize / 2) {
-          *buf++ = TAB;
-          num_spaces -= tabsize / 2;
-        }
-        else {
+      int spaces = get_space_count(tmp);
+      int spaces_to_next_tab = eval_space_count(tmp, start, tabsize);
+      if (spaces == spaces_to_next_tab) {
+        *buf++ = TAB;
+        tmp += spaces;
+      }
+      else if (spaces > spaces_to_next_tab && spaces_to_next_tab) {
+        *buf++ = TAB;
+        tmp += spaces;
+        while (spaces != spaces_to_next_tab) {
           *buf++ = SPACE;
-          num_spaces--;
+          spaces--;
         }
+      }
+      else {
+        *buf++ = SPACE;
+        tmp++;
       }
     }
   }
 
   return tmp - start;
-}
 
 /* get_count_spaces: return count of spaces to first non-space character */
 int get_count_spaces(char *buf) {
@@ -75,6 +76,11 @@ int get_count_spaces(char *buf) {
   while (*buf++ == SPACE) i++;
 
   return i;
+}
+
+/* eval_space_count: returns the number of spaces needed to fill the current tabstop */
+static int eval_space_count(char *buf, char *start, int tabsize) {
+  return (buf - start) ? (tabsize - (buf - start) % tabsize) % tabsize : tabsize;
 }
 
 /* get_line: store the input stream to array */
