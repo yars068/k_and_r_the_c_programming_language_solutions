@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
   int stops_arr[MAXARGS] = { 0 };
   int *stops = stops_arr;
   int mode = FALSE;
-  int def_stops = TRUE;
-  int flag = FALSE;
+  int def_tab_size = TRUE;  /* use default tab stop size */
+  int flag = FALSE;         /* common use flag */
   int tabsize = TABSIZE;
 
   if (argc > MAXARGS) {
@@ -50,30 +50,34 @@ int main(int argc, char *argv[]) {
         default:
           if (isdigit(**argv)) {
             *stops++ = atoi(*argv);
-            def_stops = FALSE;
+            def_tab_size = FALSE;
           }
           break;
       }
     }
   }
 
-  /* check tabstop size for equality */
-  stops = stops_arr;
-  flag = FALSE;
-  while (!def_stops && *++stops && (*stops - *(stops - 1) == TABSIZE)) flag = TRUE;
-  if (!flag && !def_stops) {
-    printf("Error: tab stops should be equivalent\n");
-    return EXIT_FAILURE;
-  }
-
   /* determine the tab stop size */
-  if (!def_stops) {
+  if (!def_tab_size) {
     stops = stops_arr;
     tabsize = *++stops - *(stops - 1);
   }
 
-  /* check work mode */
+  /* check tabstop size for equality */
+  stops = stops_arr;
   flag = FALSE;
+  while (!def_tab_size && *++stops) {
+    if (*stops - *(stops - 1) == tabsize) flag = TRUE;
+    else flag = FALSE;
+  }
+  if (!flag && !def_tab_size) {
+    printf("Error: tab stops should be equal\n");
+    return EXIT_FAILURE;
+  }
+
+  /* check work mode and run it */
+  flag = FALSE;
+  printf("Entering %s mode\n", (mode ? "entab" : "detab"));
   if (ask_line(buf, BUFSIZE, msg)) {
     switch (mode) {
       case DETAB:
@@ -90,7 +94,7 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
   }
   else {
-    printf("tabman: error: unable to %s\n", (mode ? "detab" : "entab"));
+    printf("tabman: error: unable to %s\n", (mode ? "entab" : "detab"));
     return EXIT_FAILURE;
   }
 }
