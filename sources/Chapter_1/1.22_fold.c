@@ -6,7 +6,7 @@
 /* Lesson 1.22. Write a program to "fold" the lines longer than n (80 by default) */
 /* symbols into two or more shorter lines */
 
-int fold(char buf[], int bufsize, int len, int fold_len);
+int fold(char buf[], int len, int fold_len);
 int get_line(char buf[], int lim);
 
 int main(void) {
@@ -19,7 +19,7 @@ int main(void) {
 
   printf("Type something:\n");
   while ((len = get_line(buf, BUFSIZE)) > 0) {
-    if (fold(buf, BUFSIZE, len, FOLDLEN) > 0) {
+    if (fold(buf, len, FOLDLEN) > 0) {
       printf("\nFolded text:\n%s\n", buf);
       return 0; /* Success. Operating system expects 0 in this case, otherwise -- non-null */
     }
@@ -31,35 +31,42 @@ int main(void) {
   return 0;
 }
 
-int fold(char buf[], int bufsize, int len, int fold_len) {
-  char tmp[BUFSIZE] = { '\0' };
+/* fold: fold input lines longer than fold_len characters into two or more shorter lines */
+int fold(char buf[], int len, int fold_len) {
+  char s1[BUFSIZE] = { '\0' };
+  char s2[BUFSIZE] = { '\0' };
   int bi = 0; /* index for buf */
-  int ti = 0; /* index for tmp */
+  int s1i = 0; /* index for first temporary buffer */
+  int s2i = 0; /* index for second temporary buffer */
 
   if (len <= fold_len) return 0; /* too small line */
 
-  /* copy the part of line before buf[maxlen] */
-  while (ti <= fold_len && buf[bi] != '\0') tmp[ti++] = buf[bi++];
+  /* copy the part of line before buf[fold_len] */
+  while (s1i < fold_len) s1[s1i++] = buf[bi++];
 
-  /* then, find position to fold before maxlen */
-  while (ti != 0 && tmp[ti] != ' ' && tmp[ti] != '\t') {
-    ti--;
-  }
+  /* then, find position to fold before fold_len */
+  while (s1i != 0 && s1[s1i] != ' ' && s1[s1i] != '\t')
+    s1[s1i--] = '\0';
 
-  if (ti == 0) return 0; /* we returned to begiinig of line, cannot fold */
+  if (s1i == 0) return 0; /* we returned to begiinig of line, cannot fold */
   else {
-    tmp[ti++] = '\n'; /* insert a newline, then go to next element of array */
-    bi = ti; /* copy the rest of line */
-    while (bi < bufsize && buf[bi] != '\0') tmp[ti++] = buf[bi++];
+    s1[s1i] = '\n'; /* to fold, just insert a newline, then go to next element of array */
+    bi = s1i + 1; /* copy the rest of line to another buffer */
+    while (bi < BUFSIZE && buf[bi] != '\0') s2[s2i++] = buf[bi++];
+
+    fold(s2, s2i, fold_len); /* fold recursively the right part of original string */
   }
 
-  /* Now, clear the input buffer, then copy the result from temporary buffer */
-  for (ti = 0; ti < bufsize && tmp[ti] != '\0'; ti++)
-    buf[ti] = tmp[ti];
+  /* Now, concatenate the result from both temporary buffers */
+  for (s1i = 0; s1i < BUFSIZE && s1[s1i] != '\0'; s1i++)
+    buf[s1i] = s1[s1i];
 
-  buf[ti] = '\0';
+  for (s2i = 0; s2i < BUFSIZE && s2[s2i] != '\0'; s2i++)
+    buf[s1i++] = s2[s2i];
 
-  return bufsize - ti; /* Inside the C program, non-null means true, 0 -- false */
+  buf[s1i] = '\0';
+
+  return s1i; /* Inside the C program, non-null means true, 0 -- false */
 }
 
 /* get_line: store a string to input buffer */
